@@ -12,11 +12,13 @@ class SeriesController extends Controller
         $series = [];
         $result = Serie::all();
 
-       foreach ($result as $serie){
-        $series[] = $serie->name;
-       }
+        $successMessage = session()->get('message.success');
 
-        return view('series.index', ['series' => $series]);
+        foreach ($result as $serie) {
+            $series[] = $serie;
+        }
+
+        return view('series.index', ['series' => $series, 'successMessage' => $successMessage]);
     }
 
     public function create()
@@ -26,10 +28,13 @@ class SeriesController extends Controller
 
     public function store(Request $request)
     {
-        $serie = new Serie();
-        $serie->name = $request->input('name');
-        $serie->save();
+        Serie::create($request->all());
+        return redirect()->route('series.index')->with('message.success', "Serie '{$request->name}' inserida com sucesso!");
+    }
 
-        return redirect('/series');
+    public function delete(Request $request)
+    {
+        Serie::destroy($request->id);
+        return redirect()->route('series.index')->with('message.success', "Serie deletada com sucesso!");
     }
 }
